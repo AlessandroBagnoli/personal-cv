@@ -19,6 +19,7 @@
 %-------------------------------------------------------------------------------
 % A4 paper size by default, use 'letterpaper' for US letter
 \documentclass[11pt, a4paper]{awesome-cv}
+\usepackage[italian]{babel}
 
 % Configure page margins with geometry
 \geometry{left=1.4cm, top=.8cm, right=1.4cm, bottom=1.8cm, footskip=.5cm}
@@ -55,7 +56,7 @@
 \photo[circle,noedge,left]{profilepicture.jpg}
 \name{Alessandro}{Bagnoli}
 \position{Software Developer{\enskip\cdotp\enskip}Backend}
-\address{Viale Maremma 6/A, Riccione (RN), Italia}
+\address{Riccione (RN), Italia}
 
 \mobile{(+39) 3391580201}
 \email{alessandro.bagnoli4@gmail.com}
@@ -86,9 +87,9 @@
 % Print the footer with 3 arguments(<left>, <center>, <right>)
 % Leave any of these blank if they are not needed
 \makecvfooter
-  {\today}
+  {}
   {Alessandro Bagnoli~~~·~~~Curriculum Vitae}
-  {\thepage}
+  {}
 
 
 %-------------------------------------------------------------------------------
@@ -98,7 +99,7 @@
 \input{cv/experience.tex}
 \input{cv/education.tex}
 \input{cv/certifications.tex}
-\input{cv/organitationalskills.tex}
+%\input{cv/organitationalskills.tex}
 %\input{cv/skills.tex}
 \input{cv/personaldata.tex}
 %\input{cv/extracurricular.tex}
