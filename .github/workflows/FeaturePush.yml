@@ -6,6 +6,7 @@ on:
       - main-eng
 jobs:
   push-to-feature:
+    name: Push to feature
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
