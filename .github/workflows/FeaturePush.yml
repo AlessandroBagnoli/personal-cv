@@ -16,4 +16,3 @@ jobs:
         with:
           root_file: cv.tex
           latexmk_use_xelatex: true
-          extra_fonts: ./fonts/*.ttf
