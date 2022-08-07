@@ -1,0 +1,18 @@
+name: Feature Push
+on:
+  push:
+    branches-ignore:
+      - main
+      - main-eng
+jobs:
+  push-to-feature:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v2
+        
+      - name: Build LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: cv.tex
+          latexmk_use_xelatex: true
