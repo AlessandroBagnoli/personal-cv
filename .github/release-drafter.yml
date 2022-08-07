@@ -1,0 +1,6 @@
+name-template: '$CODE_TAG'
+tag-template: '$CODE_TAG'
+template: |
+  ## What’s Changed
+
+  $CHANGES
