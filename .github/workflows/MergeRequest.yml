@@ -13,7 +13,7 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v2
         
-      - name: tag check
+      - name: Tag check
         run: |
           export ORIGINAL_CODE_TAG=$(echo -n | cat version) && echo "Code tag is: $ORIGINAL_CODE_TAG"
           [[ $ORIGINAL_CODE_TAG =~ ^v[0-9]+.[0-9]+.[0-9]+-[A-Z]{3}$ ]] || (echo $'unsuitable tag for deployment: regex \'^v[0-9]+.[0-9]+.[0-9]+-[A-Z]{3}$\' was not respected'; exit 99)
@@ -32,11 +32,11 @@ jobs:
           root_file: cv.tex
           latexmk_use_xelatex: true
 
-      - name: success cleanup - deleting tag
+      - name: Success cleanup - deleting tag
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
 
-      - name: deleting tag on failure
+      - name: Deleting tag on failure
         if: ${{ failure() }}
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
