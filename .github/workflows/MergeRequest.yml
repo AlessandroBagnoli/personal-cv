@@ -14,12 +14,12 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Get pull request link
-        uses: kceb/pull-request-url-action@v2
+        uses: 8BitJonny/gh-get-current-pr@2.1.0
         id: pr-url
         
       - name: Print pull request link
         run: |
-          echo ${{ steps.pr-url.outputs.url }}
+          echo ${{ steps.pr-url.outputs.pr_url }}
 
       - name: Tag check
         run: |
