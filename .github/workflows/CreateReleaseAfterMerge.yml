@@ -54,6 +54,7 @@ jobs:
         with:
           name: ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }}
           tag: ${{ env.CODE_TAG }}
+          publish: true
           
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
