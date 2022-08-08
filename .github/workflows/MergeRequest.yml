@@ -43,13 +43,32 @@ jobs:
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
           
-      - name: Send Telegram notification
+      - name: Get pull request link    
+        uses: kceb/pull-request-url-action@v1
+        id: pr-url
+        
+      - name: Send Telegram notification on success
         run: |
           curl --request POST \
-          --url 'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument' \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument' \
           --header 'Accept: application/json' \
           --header 'Content-Type: multipart/form-data' \
           --header 'User-Agent: GitHub Action' \
           --form   'document=@./cv.pdf' \
-          --form   'caption=Pull request has generated following document' \
+          --form   'caption=Pull request ${{ steps.pr-url.outputs.url }} has generated following document' \
           --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
+          
+      - name: Send Telegram notification on failure
+        if: ${{ failure() }}
+        run: |
+          curl --request POST \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage' \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: application/json' \
+          --header 'User-Agent: GitHub Action' \
+          --data '
+          {
+            "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}"
+            "text": "Pull pipeline failed! ${{ steps.pr-url.outputs.url }}"
+          }
+          '
