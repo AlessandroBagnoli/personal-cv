@@ -16,7 +16,7 @@ jobs:
       contents: write
       # write permission is required for autolabeler
       # otherwise, read permission is required at least
-      pull-requests: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
