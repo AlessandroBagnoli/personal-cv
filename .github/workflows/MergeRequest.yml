@@ -62,7 +62,7 @@ jobs:
           
       - name: Delete draft releases
         if: ${{ always() }}
-        uses: hugo19941994/delete-draft-releases@v1
+        uses: hugo19941994/delete-draft-releases@v1.0.0
         
       - name: Send Telegram notification on success
         run: |
