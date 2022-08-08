@@ -16,7 +16,7 @@ jobs:
       contents: write
       # write permission is required for autolabeler
       # otherwise, read permission is required at least
-      pull-requests: write
+      pull-requests: read
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
@@ -52,6 +52,7 @@ jobs:
         with:
           name: ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }}
           tag: ${{ env.CODE_TAG }}
+          commitish: $GITHUB_HEAD_REF
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
