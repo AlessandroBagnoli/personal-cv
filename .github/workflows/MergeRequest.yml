@@ -16,6 +16,8 @@ jobs:
       - name: Get pull request link
         uses: kceb/pull-request-url-action@v1
         id: pr-url
+        with: 
+          github-oauth-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Tag check
         run: |
