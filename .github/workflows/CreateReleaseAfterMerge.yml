@@ -46,6 +46,7 @@ jobs:
         with:
           root_file: cv.tex
           latexmk_use_xelatex: true
+          post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
 
       - name: Create draft release
         id: create_release
@@ -58,11 +59,38 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./cv.pdf
-          asset_name: CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
+          asset_path: ./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
           asset_content_type: application/pdf
 
       - name: Deleting tag on failure
         if: ${{ failure() }}
         run: |
           git push --delete origin $CODE_TAG
+          
+      - name: Send Telegram notification on success
+        run: |
+          ROCKET_EMOJI=$(echo -e '\U0001F680')
+          curl --request POST \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument' \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: multipart/form-data' \
+          --header 'User-Agent: GitHub Action' \
+          --form   'document=@./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
+          --form   'caption='$ROCKET_EMOJI' Deploy successful! It has generated following document '$ROCKET_EMOJI'. Related release is available at ${{ steps.create_release.outputs.html_url }}' \
+          --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
+
+      - name: Send Telegram notification on failure
+        if: ${{ failure() }}
+        run: |
+          WARNING_EMOJI=$(echo -e '\U00026A0')
+          curl --request POST \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage' \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: application/json' \
+          --header 'User-Agent: GitHub Action' \
+          --data '
+          {
+            "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
+            "text": "'$WARNING_EMOJI' Deploy failed! '$WARNING_EMOJI'"
+          }
+          '

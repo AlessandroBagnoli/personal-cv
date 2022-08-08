@@ -50,13 +50,16 @@ jobs:
         run: |
           ROCKET_EMOJI=$(echo -e '\U0001F680')
           curl --request POST \
-          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument' \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage' \
           --header 'Accept: application/json' \
-          --header 'Content-Type: multipart/form-data' \
+          --header 'Content-Type: application/json' \
           --header 'User-Agent: GitHub Action' \
-          --form   'document=@./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
-          --form   'caption='$ROCKET_EMOJI' Pull pipeline passed! It has generated following document '$ROCKET_EMOJI'' \
-          --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
+          --data '
+          {
+            "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
+            "text": "'$ROCKET_EMOJI' Pull pipeline passed! Merge whenever you are ready to generate your PDF '$ROCKET_EMOJI'"
+          }
+          '
           
       - name: Send Telegram notification on failure
         if: ${{ failure() }}
