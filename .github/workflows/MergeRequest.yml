@@ -16,8 +16,6 @@ jobs:
       - name: Get pull request link
         uses: kceb/pull-request-url-action@v1
         id: pr-url
-        with: 
-          github-oauth-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Tag check
         run: |
@@ -63,6 +61,7 @@ jobs:
       - name: Send Telegram notification on failure
         if: ${{ failure() }}
         run: |
+          WARNING_EMOJI=$(echo -e '\U0001F514')
           curl --request POST \
           --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage' \
           --header 'Accept: application/json' \
@@ -71,6 +70,6 @@ jobs:
           --data '
           {
             "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
-            "text": "\xE2\x9A\xA0 Pull pipeline failed! ${{ steps.pr-url.outputs.url }} \xE2\x9A\xA0"
+            "text": "'$WARNING_EMOJI' Pull pipeline failed! ${{ steps.pr-url.outputs.url }} '$WARNING_EMOJI'"
           }
           '
