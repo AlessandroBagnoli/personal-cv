@@ -12,6 +12,10 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v2
         
+      - name: Cache docker image
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+        
       - name: Build LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
