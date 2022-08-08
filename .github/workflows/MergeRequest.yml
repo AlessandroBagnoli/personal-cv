@@ -20,9 +20,11 @@ jobs:
           export ORIGINAL_LANGUAGE=$(echo -n | cat language) && echo "Language is: $ORIGINAL_LANGUAGE"
           [[ $ORIGINAL_LANGUAGE =~ ^[a-zA-Z]{3,}+$ ]] || (echo $'unsuitable language for deployment: regex \'^[a-zA-Z]{3,}+$\' was not respected'; exit 99)
           export LANGUAGE_CODE_THREE=$(echo -n ${ORIGINAL_LANGUAGE:0:3} | tr '[a-z]' '[A-Z]') && echo "Language code 3 digits is: $LANGUAGE_CODE_THREE"
+          export LANGUAGE_CODE_TWO=$(echo -n ${ORIGINAL_LANGUAGE:0:2} | tr '[a-z]' '[A-Z]') && echo "Language code 2 digits is: $LANGUAGE_CODE_TWO"
           export CODE_TAG="v${ORIGINAL_CODE_TAG}-${LANGUAGE_CODE_THREE}"
           echo "CODE_TAG=$CODE_TAG" >> $GITHUB_ENV
           echo "PRESERVE_TAG=false" >> $GITHUB_ENV
+          echo "LANGUAGE_CODE_TWO=$LANGUAGE_CODE_TWO" >> $GITHUB_ENV
           git fetch --unshallow origin
           git tag | grep "$CODE_TAG" && export CODE_TAG_EXISTS=true && echo "ERROR: THIS TAG ALREADY EXISTS WITHIN THE REPO! EXITING" && sed -i 's/PRESERVE_TAG=false/PRESERVE_TAG=true/g' $GITHUB_ENV  && exit 99
           echo " ==> TAGS: Checks ok!"
@@ -33,8 +35,9 @@ jobs:
         with:
           root_file: cv.tex
           latexmk_use_xelatex: true
+          post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
 
-      - name: Success cleanup - deleting tag
+      - name: Deleting tag on success
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
 
@@ -42,3 +45,34 @@ jobs:
         if: ${{ failure() }}
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
+        
+      - name: Send Telegram notification on success
+        run: |
+          ROCKET_EMOJI=$(echo -e '\U0001F680')
+          curl --request POST \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage' \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: application/json' \
+          --header 'User-Agent: GitHub Action' \
+          --data '
+          {
+            "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
+            "text": "'$ROCKET_EMOJI' Pull pipeline passed! Merge whenever you are ready to generate your PDF '$ROCKET_EMOJI'"
+          }
+          '
+          
+      - name: Send Telegram notification on failure
+        if: ${{ failure() }}
+        run: |
+          WARNING_EMOJI=$(echo -e '\U00026A0')
+          curl --request POST \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage' \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: application/json' \
+          --header 'User-Agent: GitHub Action' \
+          --data '
+          {
+            "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
+            "text": "'$WARNING_EMOJI' Pull pipeline failed! '$WARNING_EMOJI'"
+          }
+          '
