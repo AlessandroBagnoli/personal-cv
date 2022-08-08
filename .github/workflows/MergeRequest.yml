@@ -16,6 +16,10 @@ jobs:
       - name: Get pull request link
         uses: kceb/pull-request-url-action@v1
         id: pr-url
+        
+      - name: Print pull request link
+        run: |
+          echo ${{ steps.pr-url.outputs.url }}
 
       - name: Tag check
         run: |
@@ -24,9 +28,11 @@ jobs:
           export ORIGINAL_LANGUAGE=$(echo -n | cat language) && echo "Language is: $ORIGINAL_LANGUAGE"
           [[ $ORIGINAL_LANGUAGE =~ ^[a-zA-Z]{3,}+$ ]] || (echo $'unsuitable language for deployment: regex \'^[a-zA-Z]{3,}+$\' was not respected'; exit 99)
           export LANGUAGE_CODE_THREE=$(echo -n ${ORIGINAL_LANGUAGE:0:3} | tr '[a-z]' '[A-Z]') && echo "Language code 3 digits is: $LANGUAGE_CODE_THREE"
+          export LANGUAGE_CODE_TWO=$(echo -n ${ORIGINAL_LANGUAGE:0:2} | tr '[a-z]' '[A-Z]') && echo "Language code 2 digits is: $LANGUAGE_CODE_TWO"
           export CODE_TAG="v${ORIGINAL_CODE_TAG}-${LANGUAGE_CODE_THREE}"
           echo "CODE_TAG=$CODE_TAG" >> $GITHUB_ENV
           echo "PRESERVE_TAG=false" >> $GITHUB_ENV
+          echo "LANGUAGE_CODE_TWO=$LANGUAGE_CODE_TWO" >> $GITHUB_ENV
           git fetch --unshallow origin
           git tag | grep "$CODE_TAG" && export CODE_TAG_EXISTS=true && echo "ERROR: THIS TAG ALREADY EXISTS WITHIN THE REPO! EXITING" && sed -i 's/PRESERVE_TAG=false/PRESERVE_TAG=true/g' $GITHUB_ENV  && exit 99
           echo " ==> TAGS: Checks ok!"
@@ -37,6 +43,7 @@ jobs:
         with:
           root_file: cv.tex
           latexmk_use_xelatex: true
+          post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
 
       - name: Success cleanup - deleting tag
         run: |
