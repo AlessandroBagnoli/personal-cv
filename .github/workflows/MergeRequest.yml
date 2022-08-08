@@ -54,8 +54,8 @@ jobs:
           --header 'Accept: application/json' \
           --header 'Content-Type: multipart/form-data' \
           --header 'User-Agent: GitHub Action' \
-          --form   'document=@./cv.pdf' \
-          --form   'caption='$WARNING_EMOJI' Pull pipeline passed! It has generated following document '$WARNING_EMOJI'' \
+          --form   'document=@./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
+          --form   'caption='$ROCKET_EMOJI' Pull pipeline passed! It has generated following document '$ROCKET_EMOJI'' \
           --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
           
       - name: Send Telegram notification on failure
