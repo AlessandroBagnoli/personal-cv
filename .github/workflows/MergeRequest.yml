@@ -5,6 +5,9 @@ on:
       - main
       - main-eng
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   build_n_test:
     name: Build and check tag
@@ -12,6 +15,10 @@ jobs:
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v2
+        
+      - name: Cache docker image
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
 
       - name: Tag check
         run: |
@@ -36,6 +43,21 @@ jobs:
           root_file: cv.tex
           latexmk_use_xelatex: true
           post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
+          
+      - name: Create draft release
+        id: create_release
+        uses: release-drafter/release-drafter@v5
+        with:
+          name: ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }}
+          tag: ${{ env.CODE_TAG }}
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
+          asset_name: CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
+          asset_content_type: application/pdf
 
       - name: Deleting tag on success
         run: |
@@ -45,6 +67,13 @@ jobs:
         if: ${{ failure() }}
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
+          
+      - name: Delete draft releases on success
+        uses: hugo19941994/delete-draft-releases@v1.0.0
+        
+      - name: Delete draft releases on failure
+        if: ${{ failure() }}
+        uses: hugo19941994/delete-draft-releases@v1.0.0
         
       - name: Send Telegram notification on success
         run: |
