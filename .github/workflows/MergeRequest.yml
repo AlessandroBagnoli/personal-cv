@@ -40,6 +40,13 @@ jobs:
           echo "ORIGINAL_CODE_TAG=$ORIGINAL_CODE_TAG" >> $GITHUB_ENV
           echo "ORIGINAL_LANGUAGE=$ORIGINAL_LANGUAGE" >> $GITHUB_ENV
           echo "LANGUAGE_CODE_TWO=$LANGUAGE_CODE_TWO" >> $GITHUB_ENV
+
+      - name: Build LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: cv.tex
+          latexmk_use_xelatex: true
+          post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
           
       - name: Create draft release
         id: create_release
@@ -48,13 +55,6 @@ jobs:
           name: ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted
           tag: ${{ env.CODE_TAG }}
           commitish: ${{ github.event.pull_request.base.ref }}
-
-      - name: Build LaTeX document
-        uses: xu-cheng/latex-action@v2
-        with:
-          root_file: cv.tex
-          latexmk_use_xelatex: true
-          post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1

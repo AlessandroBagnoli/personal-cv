@@ -6,7 +6,6 @@ on:
       - main-eng
 jobs:
   push-to-feature:
-    if: ${{ false }}  # disabled for now, just for avoid wasting minutes
     name: Push to feature
     runs-on: ubuntu-latest
     steps:
