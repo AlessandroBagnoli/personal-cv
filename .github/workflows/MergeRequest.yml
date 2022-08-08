@@ -71,6 +71,6 @@ jobs:
           --data '
           {
             "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
-            "text": "Pull pipeline failed! ${{ steps.pr-url.outputs.url }}"
+            "text": "\xE2\x9A\xA0 Pull pipeline failed! ${{ steps.pr-url.outputs.url }} \xE2\x9A\xA0"
           }
           '
