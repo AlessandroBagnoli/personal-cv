@@ -68,7 +68,7 @@ jobs:
           --header 'User-Agent: GitHub Action' \
           --data '
           {
-            "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}"
+            "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
             "text": "Pull pipeline failed! ${{ steps.pr-url.outputs.url }}"
           }
           '
