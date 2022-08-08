@@ -60,6 +60,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
           asset_path: ./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
+          asset_name: CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
           asset_content_type: application/pdf
 
       - name: Deleting tag on failure
