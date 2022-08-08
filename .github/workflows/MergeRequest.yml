@@ -37,7 +37,7 @@ jobs:
           latexmk_use_xelatex: true
           post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
 
-      - name: Success cleanup - deleting tag
+      - name: Deleting tag on success
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
 
