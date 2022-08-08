@@ -12,20 +12,22 @@ jobs:
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v2
-        
+
       - name: Tag check
         run: |
           export ORIGINAL_CODE_TAG=$(echo -n | cat version) && echo "Code tag is: $ORIGINAL_CODE_TAG"
-          [[ $ORIGINAL_CODE_TAG =~ ^v[0-9]+.[0-9]+.[0-9]+-[A-Z]{3}$ ]] || (echo $'unsuitable tag for deployment: regex \'^v[0-9]+.[0-9]+.[0-9]+-[A-Z]{3}$\' was not respected'; exit 99)
-          export CODE_TAG="${ORIGINAL_CODE_TAG}"
+          [[ $ORIGINAL_CODE_TAG =~ ^[0-9]+.[0-9]+.[0-9]+$ ]] || (echo $'unsuitable tag for deployment: regex \'^[0-9]+.[0-9]+.[0-9]+$\' was not respected'; exit 99)
+          export ORIGINAL_LANGUAGE=$(echo -n | cat language) && echo "Language is: $ORIGINAL_LANGUAGE"
+          [[ $ORIGINAL_LANGUAGE =~ ^[a-zA-Z]{3,}+$ ]] || (echo $'unsuitable language for deployment: regex \'^[a-zA-Z]{3,}+$\' was not respected'; exit 99)
+          export LANGUAGE_CODE_THREE=$(echo -n ${ORIGINAL_LANGUAGE:0:3} | tr '[a-z]' '[A-Z]') && echo "Language code 3 digits is: $LANGUAGE_CODE_THREE"
+          export CODE_TAG="v${ORIGINAL_CODE_TAG}-${LANGUAGE_CODE_THREE}"
           echo "CODE_TAG=$CODE_TAG" >> $GITHUB_ENV
           echo "PRESERVE_TAG=false" >> $GITHUB_ENV
           git fetch --unshallow origin
           git tag | grep "$CODE_TAG" && export CODE_TAG_EXISTS=true && echo "ERROR: THIS TAG ALREADY EXISTS WITHIN THE REPO! EXITING" && sed -i 's/PRESERVE_TAG=false/PRESERVE_TAG=true/g' $GITHUB_ENV  && exit 99
           echo " ==> TAGS: Checks ok!"
           echo " ==> TAGS: Tag is $CODE_TAG" && [[ $CODE_TAG_EXISTS != "true" ]] && git tag $CODE_TAG && git push --tags
-          echo "ORIGINAL_CODE_TAG=$ORIGINAL_CODE_TAG" >> $GITHUB_ENV
-        
+
       - name: Build LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
