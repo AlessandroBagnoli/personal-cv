@@ -5,9 +5,18 @@ on:
       - main
       - main-eng
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   build_n_test:
     name: Build and check tag
+    permissions:
+      # write permission is required to create a github release
+      contents: write
+      # write permission is required for autolabeler
+      # otherwise, read permission is required at least
+      pull-requests: read
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
@@ -24,11 +33,13 @@ jobs:
           export CODE_TAG="v${ORIGINAL_CODE_TAG}-${LANGUAGE_CODE_THREE}"
           echo "CODE_TAG=$CODE_TAG" >> $GITHUB_ENV
           echo "PRESERVE_TAG=false" >> $GITHUB_ENV
-          echo "LANGUAGE_CODE_TWO=$LANGUAGE_CODE_TWO" >> $GITHUB_ENV
           git fetch --unshallow origin
           git tag | grep "$CODE_TAG" && export CODE_TAG_EXISTS=true && echo "ERROR: THIS TAG ALREADY EXISTS WITHIN THE REPO! EXITING" && sed -i 's/PRESERVE_TAG=false/PRESERVE_TAG=true/g' $GITHUB_ENV  && exit 99
           echo " ==> TAGS: Checks ok!"
           echo " ==> TAGS: Tag is $CODE_TAG" && [[ $CODE_TAG_EXISTS != "true" ]] && git tag $CODE_TAG && git push --tags
+          echo "ORIGINAL_CODE_TAG=$ORIGINAL_CODE_TAG" >> $GITHUB_ENV
+          echo "ORIGINAL_LANGUAGE=$ORIGINAL_LANGUAGE" >> $GITHUB_ENV
+          echo "LANGUAGE_CODE_TWO=$LANGUAGE_CODE_TWO" >> $GITHUB_ENV
 
       - name: Build LaTeX document
         uses: xu-cheng/latex-action@v2
@@ -36,15 +47,31 @@ jobs:
           root_file: cv.tex
           latexmk_use_xelatex: true
           post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
+          
+      - name: Create draft release
+        id: create_release
+        uses: release-drafter/release-drafter@v5
+        with:
+          name: ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted
+          tag: ${{ env.CODE_TAG }}
+          commitish: ${{ github.event.pull_request.base.ref }}
 
-      - name: Deleting tag on success
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
+          asset_name: CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
+          asset_content_type: application/pdf
+
+      - name: Deleting tag
+        if: ${{ always() }}
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
-
-      - name: Deleting tag on failure
-        if: ${{ failure() }}
-        run: |
-          [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
+          
+      - name: Delete draft releases
+        if: ${{ always() }}
+        uses: hugo19941994/delete-draft-releases@v1.0.0
         
       - name: Send Telegram notification on success
         run: |

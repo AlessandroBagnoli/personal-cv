@@ -1,4 +1,4 @@
-name: Create Draft Release after merge
+name: Create release
 on:
   push:
     branches:
@@ -9,8 +9,8 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  create_draft_release:
-    name: Build and create draft release
+  create_release:
+    name: Build and create release
     permissions:
       # write permission is required to create a github release
       contents: write
@@ -48,12 +48,13 @@ jobs:
           latexmk_use_xelatex: true
           post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
 
-      - name: Create draft release
+      - name: Create release
         id: create_release
         uses: release-drafter/release-drafter@v5
         with:
           name: ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }}
           tag: ${{ env.CODE_TAG }}
+          publish: true
           
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -66,7 +67,7 @@ jobs:
       - name: Deleting tag on failure
         if: ${{ failure() }}
         run: |
-          git push --delete origin $CODE_TAG
+          [[ "${{ env.PRESERVE_TAG }}" == "false" ]] && git push --delete origin $CODE_TAG
           
       - name: Send Telegram notification on success
         run: |
