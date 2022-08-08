@@ -33,21 +33,6 @@ jobs:
         with:
           root_file: cv.tex
           latexmk_use_xelatex: true
-          
-      - name: Send Telegram notification
-        run: |
-          curl --request POST \
-          --url 'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument' \
-          --header 'Accept: application/json' \
-          --header 'Content-Type: application/json' \
-          --header 'User-Agent: GitHub Action' \
-          --data '
-          {
-            "document": "./cv.pdf",
-            "caption": "Pull request has generated following document",
-            "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}"
-          }
-          '
 
       - name: Success cleanup - deleting tag
         run: |
@@ -57,3 +42,14 @@ jobs:
         if: ${{ failure() }}
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
+          
+      - name: Send Telegram notification
+        run: |
+          curl --request POST \
+          --url 'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument' \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: multipart/form-data' \
+          --header 'User-Agent: GitHub Action' \
+          --form   'document=@./cv.pdf' \
+          --form   'caption=Pull request has generated following document' \
+          --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
