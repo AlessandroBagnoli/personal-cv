@@ -60,12 +60,7 @@ jobs:
           
       - name: Upload Release Asset
         run: |
-          gh api \
-          --method POST \
-          --header 'Accept: application/vnd.github+json' \
-          --header 'Content-Type: application/pdf' \
-          --input  './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
-          /repos/${{ env.OWNER }}/${{ env.REPO }}/releases/${{ steps.create_release.outputs.id }}/assets?name=CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
+          gh release upload ${{ env.CODE_TAG }} './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
       - name: Deleting tag
         if: ${{ always() }}
@@ -75,10 +70,7 @@ jobs:
       - name: Delete draft release
         if: ${{ always() }}
         run: |
-          gh api \
-          --method DELETE \
-          --header "Accept: application/vnd.github+json" \
-          /repos/${{ env.OWNER }}/${{ env.REPO }}/releases/${{ steps.create_release.outputs.id }}
+          gh release delete ${{ env.CODE_TAG }} -y
         
       - name: Send Telegram notification on success
         run: |
