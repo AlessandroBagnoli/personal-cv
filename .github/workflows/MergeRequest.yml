@@ -7,6 +7,8 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  OWNER: ${{ github.repository_owner }}
+  REPO: ${{ github.event.repository.name }}
 
 jobs:
   build_n_test:
@@ -55,23 +57,20 @@ jobs:
           name: ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted
           tag: ${{ env.CODE_TAG }}
           commitish: ${{ github.event.pull_request.base.ref }}
-
+          
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
-          asset_name: CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
-          asset_content_type: application/pdf
+        run: |
+          gh release upload ${{ env.CODE_TAG }} './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
       - name: Deleting tag
         if: ${{ always() }}
         run: |
-          [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
+          [[ "${{ env.PRESERVE_TAG }}" == "false" ]] && git push --delete origin $CODE_TAG
           
-      - name: Delete draft releases
+      - name: Delete draft release
         if: ${{ always() }}
-        uses: hugo19941994/delete-draft-releases@v1.0.0
+        run: |
+          gh release delete ${{ env.CODE_TAG }} -y
         
       - name: Send Telegram notification on success
         run: |
