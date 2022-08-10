@@ -64,7 +64,7 @@ jobs:
           --method POST \
           --header 'Accept: application/vnd.github+json' \
           --header 'Content-Type: application/pdf' \
-          --input  '@./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
+          --input  @'./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
           /repos/$OWNER/$REPO/releases/${{ steps.create_release.outputs.id }}/assets?name=CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
 
       - name: Deleting tag
