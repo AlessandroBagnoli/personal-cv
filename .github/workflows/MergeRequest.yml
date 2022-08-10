@@ -70,7 +70,7 @@ jobs:
       - name: Deleting tag
         if: ${{ always() }}
         run: |
-          [[ "${{ env.PRESERVE_TAG }}" == "false" ]] &&  git push --delete origin $CODE_TAG
+          [[ "${{ env.PRESERVE_TAG }}" == "false" ]] && git push --delete origin $CODE_TAG
           
       - name: Delete draft release
         if: ${{ always() }}
