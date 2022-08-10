@@ -65,7 +65,7 @@ jobs:
           --header 'Accept: application/vnd.github+json' \
           --header 'Content-Type: application/pdf' \
           --input  './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
-          /repos/$OWNER/$REPO/releases/${{ steps.create_release.outputs.id }}/assets?name=CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
+          /repos/${{ env.OWNER }}/${{ env.REPO }}/releases/${{ steps.create_release.outputs.id }}/assets?name=CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
 
       - name: Deleting tag
         if: ${{ always() }}
@@ -78,7 +78,7 @@ jobs:
           gh api \
           --method DELETE \
           --header "Accept: application/vnd.github+json" \
-          /repos/$OWNER/$REPO/releases/${{ steps.create_release.outputs.id }}
+          /repos/${{ env.OWNER }}/${{ env.REPO }}/releases/${{ steps.create_release.outputs.id }}
         
       - name: Send Telegram notification on success
         run: |
