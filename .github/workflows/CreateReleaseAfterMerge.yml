@@ -44,10 +44,12 @@ jobs:
 
       - name: Create release
         run: |
-          gh release create ${{ env.CODE_TAG }} \
-          --generate-notes \
-          --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }}' \
-          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
+          RELEASE_URL="$(gh release create ${{ env.CODE_TAG }} \
+            --generate-notes \
+            --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }}' \
+            './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf')"
+
+          echo "RELEASE_URL=$RELEASE_URL" >> $GITHUB_ENV
 
       - name: Deleting tag on failure
         if: ${{ failure() }}
@@ -63,7 +65,7 @@ jobs:
           --header 'Content-Type: multipart/form-data' \
           --header 'User-Agent: GitHub Action' \
           --form   'document=@./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
-          --form   'caption='$ROCKET_EMOJI' Deploy successful! It has generated following document '$ROCKET_EMOJI'. Related release is available at ${{ steps.create_release.outputs.html_url }}' \
+          --form   'caption='$ROCKET_EMOJI' Deploy successful! It has generated following document. Related release is available at ${{ env.RELEASE_URL }}' \
           --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
 
       - name: Send Telegram notification on failure
@@ -78,6 +80,6 @@ jobs:
           --data '
           {
             "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
-            "text": "'$WARNING_EMOJI' Deploy failed! '$WARNING_EMOJI'"
+            "text": "'$WARNING_EMOJI' Deploy failed!"
           }
           '

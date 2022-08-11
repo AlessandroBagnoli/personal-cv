@@ -44,14 +44,12 @@ jobs:
 
       - name: Create draft release
         run: |
-          RELEASE_URL="$(gh release create ${{ env.CODE_TAG }} \
-            --draft \
-            --generate-notes \
-            --target ${{ github.event.pull_request.base.ref }} \
-            --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
-            './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf')"
-
-          echo "RELEASE_URL=$RELEASE_URL" >> $GITHUB_ENV
+          gh release create ${{ env.CODE_TAG }} \
+          --draft \
+          --generate-notes \
+          --target ${{ github.event.pull_request.base.ref }} \
+          --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
+          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
       - name: Deleting tag
         if: ${{ always() }}
@@ -74,7 +72,7 @@ jobs:
           --data '
           {
             "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
-            "text": "'$ROCKET_EMOJI' Pull pipeline passed! Merge whenever you are ready to generate your PDF '$ROCKET_EMOJI'"
+            "text": "'$ROCKET_EMOJI' Pull pipeline passed! Merge whenever you are ready to generate your PDF"
           }
           '
 
@@ -90,6 +88,6 @@ jobs:
           --data '
           {
             "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
-            "text": "'$WARNING_EMOJI' Pull pipeline failed! '$WARNING_EMOJI'"
+            "text": "'$WARNING_EMOJI' Pull pipeline failed!"
           }
           '
