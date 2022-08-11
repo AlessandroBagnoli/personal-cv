@@ -46,7 +46,7 @@ jobs:
         run: |
           gh release create ${{ env.CODE_TAG }} \
           --draft \
-#          --generate-notes \
+          --generate-notes \
           --target ${{ github.event.pull_request.base.ref }} \
           --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
           './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
