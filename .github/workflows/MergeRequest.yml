@@ -57,11 +57,12 @@ jobs:
           --generate-notes \
           --target ${{ github.event.pull_request.base.ref }} \
           --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
-          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
+#          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
-#      - name: Upload Release Asset
-#        run: |
-#          gh release upload ${{ env.CODE_TAG }} './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
+      - name: Upload Release Asset
+        run: |
+          sleep 5
+          gh release upload ${{ env.CODE_TAG }} './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
       - name: Deleting tag
         if: ${{ always() }}
