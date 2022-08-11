@@ -5,6 +5,9 @@ on:
       - main
       - main-eng
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   build_n_test:
     name: Build and check tag
