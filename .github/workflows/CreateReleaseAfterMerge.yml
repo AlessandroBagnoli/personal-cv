@@ -1,0 +1,85 @@
+name: Create release
+on:
+  push:
+    branches:
+      - main
+      - main-eng
+        
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  create_release:
+    name: Build and create release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v3
+        
+      - name: Tag check
+        run: |
+          export ORIGINAL_CODE_TAG=$(echo -n | cat version) && echo "Code tag is: $ORIGINAL_CODE_TAG"
+          [[ $ORIGINAL_CODE_TAG =~ ^[0-9]+.[0-9]+.[0-9]+$ ]] || (echo $'unsuitable tag for deployment: regex \'^[0-9]+.[0-9]+.[0-9]+$\' was not respected'; exit 99)
+          export ORIGINAL_LANGUAGE=$(echo -n | cat language) && echo "Language is: $ORIGINAL_LANGUAGE"
+          [[ $ORIGINAL_LANGUAGE =~ ^[a-zA-Z]{3,}+$ ]] || (echo $'unsuitable language for deployment: regex \'^[a-zA-Z]{3,}+$\' was not respected'; exit 99)
+          export LANGUAGE_CODE_THREE=$(echo -n ${ORIGINAL_LANGUAGE:0:3} | tr '[a-z]' '[A-Z]') && echo "Language code 3 digits is: $LANGUAGE_CODE_THREE"
+          export LANGUAGE_CODE_TWO=$(echo -n ${ORIGINAL_LANGUAGE:0:2} | tr '[a-z]' '[A-Z]') && echo "Language code 2 digits is: $LANGUAGE_CODE_TWO"
+          export CODE_TAG="v${ORIGINAL_CODE_TAG}-${LANGUAGE_CODE_THREE}"
+          echo "CODE_TAG=$CODE_TAG" >> $GITHUB_ENV
+          echo "PRESERVE_TAG=true" >> $GITHUB_ENV
+          git fetch --depth=10
+          git tag | grep "$CODE_TAG" && export CODE_TAG_EXISTS=true && echo "ERROR: THIS TAG ALREADY EXISTS WITHIN THE REPO! EXITING" && sed -i 's/PRESERVE_TAG=false/PRESERVE_TAG=true/g' $GITHUB_ENV  && exit 99
+          echo " ==> TAGS: Checks ok!"
+          echo " ==> TAGS: Tag is $CODE_TAG" && [[ $CODE_TAG_EXISTS != "true" ]] && git tag $CODE_TAG && git push --tags
+          echo "ORIGINAL_CODE_TAG=$ORIGINAL_CODE_TAG" >> $GITHUB_ENV
+          echo "ORIGINAL_LANGUAGE=$ORIGINAL_LANGUAGE" >> $GITHUB_ENV
+          echo "LANGUAGE_CODE_TWO=$LANGUAGE_CODE_TWO" >> $GITHUB_ENV
+          
+      - name: Build LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: cv.tex
+          latexmk_use_xelatex: true
+          post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
+
+      - name: Create release
+        run: |
+          RELEASE_URL="$(gh release create ${{ env.CODE_TAG }} \
+            --generate-notes \
+            --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }}' \
+            './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf')"
+
+          echo "RELEASE_URL=$RELEASE_URL" >> $GITHUB_ENV
+
+      - name: Deleting tag on failure
+        if: ${{ failure() }}
+        run: |
+          [[ "${{ env.PRESERVE_TAG }}" == "false" ]] && git push --delete origin $CODE_TAG
+          
+      - name: Send Telegram notification on success
+        run: |
+          ROCKET_EMOJI=$(echo -e '\U0001F680')
+          curl --request POST \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument' \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: multipart/form-data' \
+          --header 'User-Agent: GitHub Action' \
+          --form   'document=@./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
+          --form   'caption='$ROCKET_EMOJI' Deploy successful! It has generated following document. Related release is available at ${{ env.RELEASE_URL }}' \
+          --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
+
+      - name: Send Telegram notification on failure
+        if: ${{ failure() }}
+        run: |
+          WARNING_EMOJI=$(echo -e '\U00026A0')
+          curl --request POST \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage' \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: application/json' \
+          --header 'User-Agent: GitHub Action' \
+          --data '
+          {
+            "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
+            "text": "'$WARNING_EMOJI' Deploy failed!"
+          }
+          '
