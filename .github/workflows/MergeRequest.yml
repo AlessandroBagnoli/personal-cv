@@ -49,7 +49,7 @@ jobs:
           --generate-notes \
           --target ${{ github.event.pull_request.base.ref }} \
           --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
-          ./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf
+          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
       - name: Delete tag and release
         if: ${{ always() }}
