@@ -58,13 +58,6 @@ jobs:
           --target ${{ github.event.pull_request.base.ref }} \
           --title ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted
 
-      - name: Create draft release
-        uses: release-drafter/release-drafter@v5
-        with:
-          name: ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted
-          tag: ${{ env.CODE_TAG }}
-          commitish: ${{ github.event.pull_request.base.ref }}
-
       - name: Upload Release Asset
         run: |
           gh release upload ${{ env.CODE_TAG }} './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
