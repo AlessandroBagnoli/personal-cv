@@ -46,7 +46,7 @@ jobs:
         run: |
           gh release create ${{ env.CODE_TAG }} \
           --generate-notes \
-          --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
+          --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }}' \
           './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
       - name: Deleting tag on failure
