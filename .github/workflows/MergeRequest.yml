@@ -47,9 +47,9 @@ jobs:
           gh release create ${{ env.CODE_TAG }} \
           --draft \
           --generate-notes \
-          --target ${{ github.sha }} \
+          --target main-eng \
           --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
-          './cv.pdf'
+          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
       - name: Deleting tag
         if: ${{ always() }}
