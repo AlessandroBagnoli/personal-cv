@@ -49,16 +49,11 @@ jobs:
           post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
 
       - name: Create release
-        id: create_release
-        uses: release-drafter/release-drafter@v5
-        with:
-          name: ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }}
-          tag: ${{ env.CODE_TAG }}
-          publish: true
-          
-      - name: Upload Release Asset
         run: |
-          gh release upload ${{ env.CODE_TAG }} './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
+          gh release create ${{ env.CODE_TAG }} \
+          --generate-notes \
+          --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
+          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
       - name: Deleting tag on failure
         if: ${{ failure() }}

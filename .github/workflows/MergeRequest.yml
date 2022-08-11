@@ -5,11 +5,6 @@ on:
       - main
       - main-eng
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  OWNER: ${{ github.repository_owner }}
-  REPO: ${{ github.event.repository.name }}
-
 jobs:
   build_n_test:
     name: Build and check tag
@@ -57,22 +52,17 @@ jobs:
           --generate-notes \
           --target ${{ github.event.pull_request.base.ref }} \
           --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
-#          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
-
-      - name: Upload Release Asset
-        run: |
-          sleep 5
-          gh release upload ${{ env.CODE_TAG }} './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
+          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
       - name: Deleting tag
         if: ${{ always() }}
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] && git push --delete origin $CODE_TAG
 
-#      - name: Delete draft release
-#        if: ${{ always() }}
-#        run: |
-#          gh release delete ${{ env.CODE_TAG }} -y
+      - name: Delete draft release
+        if: ${{ always() }}
+        run: |
+          gh release delete ${{ env.CODE_TAG }} -y
 
       - name: Send Telegram notification on success
         run: |
