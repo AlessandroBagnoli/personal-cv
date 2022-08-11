@@ -56,7 +56,7 @@ jobs:
           --draft \
           --generate-notes \
           --target ${{ github.event.pull_request.base.ref }} \
-          --title ${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted
+          --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted'
 
       - name: Upload Release Asset
         run: |
