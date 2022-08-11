@@ -44,12 +44,14 @@ jobs:
 
       - name: Create draft release
         run: |
-          gh release create ${{ env.CODE_TAG }} \
-          --draft \
-          --generate-notes \
-          --target ${{ github.event.pull_request.base.ref }} \
-          --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
-          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
+          RELEASE_URL="$(gh release create ${{ env.CODE_TAG }} \
+            --draft \
+            --generate-notes \
+            --target ${{ github.event.pull_request.base.ref }} \
+            --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
+            './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf')"
+
+          echo "RELEASE_URL=$RELEASE_URL" >> $GITHUB_ENV
 
       - name: Deleting tag
         if: ${{ always() }}
