@@ -11,12 +11,6 @@ env:
 jobs:
   build_n_test:
     name: Build and check tag
-    permissions:
-      # write permission is required to create a github release
-      contents: write
-      # write permission is required for autolabeler
-      # otherwise, read permission is required at least
-      pull-requests: read
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
