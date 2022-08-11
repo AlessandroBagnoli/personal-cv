@@ -51,15 +51,10 @@ jobs:
           --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
           './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
 
-      - name: Deleting tag
+      - name: Delete tag and release
         if: ${{ always() }}
         run: |
-          [[ "${{ env.PRESERVE_TAG }}" == "false" ]] && git push --delete origin $CODE_TAG
-
-      - name: Delete draft release
-        if: ${{ always() }}
-        run: |
-          gh release delete ${{ env.CODE_TAG }} -y
+          [[ "${{ env.PRESERVE_TAG }}" == "false" ]] && git push --delete origin $CODE_TAG && gh release delete ${{ env.CODE_TAG }} -y
 
       - name: Send Telegram notification on success
         run: |
