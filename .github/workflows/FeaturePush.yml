@@ -15,5 +15,6 @@ jobs:
       - name: Build LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
-          root_file: cv_eng.tex
+          root_file: "*.tex"
+          glob_root_file: true
           latexmk_use_xelatex: true
