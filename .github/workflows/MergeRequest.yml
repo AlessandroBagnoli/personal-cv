@@ -51,34 +51,8 @@ jobs:
         if: ${{ always() }}
         run: |
           [[ "${{ env.PRESERVE_TAG }}" == "false" ]] && git push --delete origin $CODE_TAG && gh release delete ${{ env.CODE_TAG }} -y
-          
-      - name: Send Telegram notification on success
-        run: |
-          ROCKET_EMOJI=$(echo -e '\U0001F680')
-          curl --request POST \
-          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMediaGroup' \
-          --header 'Accept: application/json' \
-          --header 'Content-Type: multipart/form-data' \
-          --header 'User-Agent: GitHub Action' \
-          --form   'media=
-            [
-              {
-                "type": "document",
-                "media": "attach://CV_Bagnoli_Alessandro_EN.pdf"
-              },
-              {
-                "type": "document",
-                "media": "attach://CV_Bagnoli_Alessandro_IT.pdf",
-                "caption": "'$ROCKET_EMOJI' Deploy successful! It has generated following document. Related release is available at ${{ env.RELEASE_URL }}"
-              }
-            ]
-          ' \
-          --form   'CV_Bagnoli_Alessandro_EN.pdf=@./CV_Bagnoli_Alessandro_EN.pdf' \
-          --form   'CV_Bagnoli_Alessandro_IT.pdf=@./CV_Bagnoli_Alessandro_IT.pdf' \
-          --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
 
       - name: Send Telegram notification on success
-        if: ${{ false }} #TODO temporarily disabled for testing purposes, TO RE ENABLE AFTER TESTING
         run: |
           ROCKET_EMOJI=$(echo -e '\U0001F680')
           curl --request POST \
@@ -89,7 +63,7 @@ jobs:
           --data '
           {
             "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
-            "text": "'$ROCKET_EMOJI' Pull pipeline passed! Merge whenever you are ready to generate your PDF"
+            "text": "'$ROCKET_EMOJI' Pull pipeline passed! Merge whenever you are ready to generate your PDFs"
           }
           '
 

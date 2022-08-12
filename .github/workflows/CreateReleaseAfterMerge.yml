@@ -56,12 +56,25 @@ jobs:
         run: |
           ROCKET_EMOJI=$(echo -e '\U0001F680')
           curl --request POST \
-          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument' \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMediaGroup' \
           --header 'Accept: application/json' \
           --header 'Content-Type: multipart/form-data' \
           --header 'User-Agent: GitHub Action' \
-          --form   'document=@./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
-          --form   'caption='$ROCKET_EMOJI' Deploy successful! It has generated following document. Related release is available at ${{ env.RELEASE_URL }}' \
+          --form   'media=
+            [
+              {
+                "type": "document",
+                "media": "attach://CV_Bagnoli_Alessandro_EN.pdf"
+              },
+              {
+                "type": "document",
+                "media": "attach://CV_Bagnoli_Alessandro_IT.pdf",
+                "caption": "'$ROCKET_EMOJI' Deploy successful! Here are your PDFs. Related release is available at ${{ env.RELEASE_URL }}"
+              }
+            ]
+          ' \
+          --form   'CV_Bagnoli_Alessandro_EN.pdf=@./CV_Bagnoli_Alessandro_EN.pdf' \
+          --form   'CV_Bagnoli_Alessandro_IT.pdf=@./CV_Bagnoli_Alessandro_IT.pdf' \
           --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
 
       - name: Send Telegram notification on failure
