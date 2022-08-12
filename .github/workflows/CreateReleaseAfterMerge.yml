@@ -42,7 +42,7 @@ jobs:
             --generate-notes \
             --title 'Curriculum Vitae ${{ env.ORIGINAL_CODE_TAG }}' \
             './CV_Bagnoli_Alessandro_EN.pdf' \
-            './CV_Bagnoli_Alessandro_IT.pdf'
+            './CV_Bagnoli_Alessandro_IT.pdf')"
 
           echo "RELEASE_URL=$RELEASE_URL" >> $GITHUB_ENV
 
