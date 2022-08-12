@@ -74,7 +74,7 @@ jobs:
             ]
           ' \
           --form   'CV_Bagnoli_Alessandro_EN.pdf=@./CV_Bagnoli_Alessandro_EN.pdf' \
-          --form   'CV_Bagnoli_Alessandro_IT=@./CV_Bagnoli_Alessandro_IT.pdf' \
+          --form   'CV_Bagnoli_Alessandro_IT.pdf=@./CV_Bagnoli_Alessandro_IT.pdf' \
           --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
 
       - name: Send Telegram notification on success
