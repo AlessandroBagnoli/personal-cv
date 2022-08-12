@@ -40,7 +40,6 @@ jobs:
         run: |
           gh release create ${{ env.CODE_TAG }} \
           --draft \
-          --generate-notes \
           --target ${{ github.event.pull_request.base.ref }} \
           --title 'Curriculum Vitae ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
           './CV_Bagnoli_Alessandro_EN.pdf' \
