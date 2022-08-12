@@ -20,11 +20,7 @@ jobs:
         run: |
           export ORIGINAL_CODE_TAG=$(echo -n | cat version) && echo "Code tag is: $ORIGINAL_CODE_TAG"
           [[ $ORIGINAL_CODE_TAG =~ ^[0-9]+.[0-9]+.[0-9]+$ ]] || (echo $'unsuitable tag for deployment: regex \'^[0-9]+.[0-9]+.[0-9]+$\' was not respected'; exit 99)
-          export ORIGINAL_LANGUAGE=$(echo -n | cat language) && echo "Language is: $ORIGINAL_LANGUAGE"
-          [[ $ORIGINAL_LANGUAGE =~ ^[a-zA-Z]{3,}+$ ]] || (echo $'unsuitable language for deployment: regex \'^[a-zA-Z]{3,}+$\' was not respected'; exit 99)
-          export LANGUAGE_CODE_THREE=$(echo -n ${ORIGINAL_LANGUAGE:0:3} | tr '[a-z]' '[A-Z]') && echo "Language code 3 digits is: $LANGUAGE_CODE_THREE"
-          export LANGUAGE_CODE_TWO=$(echo -n ${ORIGINAL_LANGUAGE:0:2} | tr '[a-z]' '[A-Z]') && echo "Language code 2 digits is: $LANGUAGE_CODE_TWO"
-          export CODE_TAG="v${ORIGINAL_CODE_TAG}-${LANGUAGE_CODE_THREE}"
+          export CODE_TAG="v${ORIGINAL_CODE_TAG}"
           echo "CODE_TAG=$CODE_TAG" >> $GITHUB_ENV
           echo "PRESERVE_TAG=false" >> $GITHUB_ENV
           git fetch --unshallow origin
@@ -32,15 +28,13 @@ jobs:
           echo " ==> TAGS: Checks ok!"
           echo " ==> TAGS: Tag is $CODE_TAG" && [[ $CODE_TAG_EXISTS != "true" ]] && git tag $CODE_TAG && git push --tags
           echo "ORIGINAL_CODE_TAG=$ORIGINAL_CODE_TAG" >> $GITHUB_ENV
-          echo "ORIGINAL_LANGUAGE=$ORIGINAL_LANGUAGE" >> $GITHUB_ENV
-          echo "LANGUAGE_CODE_TWO=$LANGUAGE_CODE_TWO" >> $GITHUB_ENV
 
       - name: Build LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
           root_file: cv_eng.tex
           latexmk_use_xelatex: true
-          post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
+          post_compile: "cp cv_eng.pdf CV_Bagnoli_Alessandro_EN.pdf && cp cv_ita.pdf CV_Bagnoli_Alessandro_IT.pdf"
 
       - name: Create draft release
         run: |
@@ -48,8 +42,9 @@ jobs:
           --draft \
           --generate-notes \
           --target ${{ github.event.pull_request.base.ref }} \
-          --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
-          './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf'
+          --title 'Curriculum Vitae ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
+          './CV_Bagnoli_Alessandro_EN.pdf' \
+          './CV_Bagnoli_Alessandro_IT.pdf'
 
       - name: Delete tag and release
         if: ${{ always() }}
