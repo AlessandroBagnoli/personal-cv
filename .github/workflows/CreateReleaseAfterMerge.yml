@@ -20,11 +20,7 @@ jobs:
         run: |
           export ORIGINAL_CODE_TAG=$(echo -n | cat version) && echo "Code tag is: $ORIGINAL_CODE_TAG"
           [[ $ORIGINAL_CODE_TAG =~ ^[0-9]+.[0-9]+.[0-9]+$ ]] || (echo $'unsuitable tag for deployment: regex \'^[0-9]+.[0-9]+.[0-9]+$\' was not respected'; exit 99)
-          export ORIGINAL_LANGUAGE=$(echo -n | cat language) && echo "Language is: $ORIGINAL_LANGUAGE"
-          [[ $ORIGINAL_LANGUAGE =~ ^[a-zA-Z]{3,}+$ ]] || (echo $'unsuitable language for deployment: regex \'^[a-zA-Z]{3,}+$\' was not respected'; exit 99)
-          export LANGUAGE_CODE_THREE=$(echo -n ${ORIGINAL_LANGUAGE:0:3} | tr '[a-z]' '[A-Z]') && echo "Language code 3 digits is: $LANGUAGE_CODE_THREE"
-          export LANGUAGE_CODE_TWO=$(echo -n ${ORIGINAL_LANGUAGE:0:2} | tr '[a-z]' '[A-Z]') && echo "Language code 2 digits is: $LANGUAGE_CODE_TWO"
-          export CODE_TAG="v${ORIGINAL_CODE_TAG}-${LANGUAGE_CODE_THREE}"
+          export CODE_TAG="v${ORIGINAL_CODE_TAG}"
           echo "CODE_TAG=$CODE_TAG" >> $GITHUB_ENV
           echo "PRESERVE_TAG=true" >> $GITHUB_ENV
           git fetch --depth=10
@@ -32,22 +28,22 @@ jobs:
           echo " ==> TAGS: Checks ok!"
           echo " ==> TAGS: Tag is $CODE_TAG" && [[ $CODE_TAG_EXISTS != "true" ]] && git tag $CODE_TAG && git push --tags
           echo "ORIGINAL_CODE_TAG=$ORIGINAL_CODE_TAG" >> $GITHUB_ENV
-          echo "ORIGINAL_LANGUAGE=$ORIGINAL_LANGUAGE" >> $GITHUB_ENV
-          echo "LANGUAGE_CODE_TWO=$LANGUAGE_CODE_TWO" >> $GITHUB_ENV
           
       - name: Build LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
-          root_file: cv.tex
+          root_file: "*.tex"
+          glob_root_file: true
           latexmk_use_xelatex: true
-          post_compile: "cp cv.pdf CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf"
+          post_compile: "cp cv_eng.pdf CV_Bagnoli_Alessandro_EN.pdf && cp cv_ita.pdf CV_Bagnoli_Alessandro_IT.pdf"
 
       - name: Create release
         run: |
           RELEASE_URL="$(gh release create ${{ env.CODE_TAG }} \
             --generate-notes \
-            --title '${{ env.ORIGINAL_LANGUAGE }} ${{ env.ORIGINAL_CODE_TAG }}' \
-            './CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf')"
+            --title 'Curriculum Vitae ${{ env.ORIGINAL_CODE_TAG }}' \
+            './CV_Bagnoli_Alessandro_EN.pdf' \
+            './CV_Bagnoli_Alessandro_IT.pdf'
 
           echo "RELEASE_URL=$RELEASE_URL" >> $GITHUB_ENV
 
@@ -60,12 +56,25 @@ jobs:
         run: |
           ROCKET_EMOJI=$(echo -e '\U0001F680')
           curl --request POST \
-          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument' \
+          --url    'https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMediaGroup' \
           --header 'Accept: application/json' \
           --header 'Content-Type: multipart/form-data' \
           --header 'User-Agent: GitHub Action' \
-          --form   'document=@./CV_Bagnoli_Alessandro_${{ env.LANGUAGE_CODE_TWO }}.pdf' \
-          --form   'caption='$ROCKET_EMOJI' Deploy successful! It has generated following document. Related release is available at ${{ env.RELEASE_URL }}' \
+          --form   'media=
+            [
+              {
+                "type": "document",
+                "media": "attach://CV_Bagnoli_Alessandro_EN.pdf"
+              },
+              {
+                "type": "document",
+                "media": "attach://CV_Bagnoli_Alessandro_IT.pdf",
+                "caption": "'$ROCKET_EMOJI' Deploy successful! Here are your PDFs. Related release is available at ${{ env.RELEASE_URL }}"
+              }
+            ]
+          ' \
+          --form   'CV_Bagnoli_Alessandro_EN.pdf=@./CV_Bagnoli_Alessandro_EN.pdf' \
+          --form   'CV_Bagnoli_Alessandro_IT.pdf=@./CV_Bagnoli_Alessandro_IT.pdf' \
           --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
 
       - name: Send Telegram notification on failure
