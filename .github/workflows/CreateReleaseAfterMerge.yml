@@ -29,7 +29,7 @@ jobs:
           echo "ORIGINAL_CODE_TAG=$ORIGINAL_CODE_TAG" >> $GITHUB_ENV
           
       - name: Build LaTeX document
-        uses: xu-cheng/latex-action@v2
+        uses: xu-cheng/latex-action@v3
         with:
           root_file: "*.tex"
           glob_root_file: true
