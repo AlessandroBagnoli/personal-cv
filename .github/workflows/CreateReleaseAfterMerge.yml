@@ -34,15 +34,14 @@ jobs:
           root_file: "*.tex"
           glob_root_file: true
           latexmk_use_xelatex: true
-          post_compile: "cp cv_eng.pdf CV_Bagnoli_Alessandro_EN.pdf && cp cv_ita.pdf CV_Bagnoli_Alessandro_IT.pdf"
+          post_compile: "cp cv_eng.pdf CV_Bagnoli_Alessandro_EN.pdf"
 
       - name: Create release
         run: |
           RELEASE_URL="$(gh release create ${{ env.CODE_TAG }} \
             --generate-notes \
             --title 'Curriculum Vitae ${{ env.ORIGINAL_CODE_TAG }}' \
-            './CV_Bagnoli_Alessandro_EN.pdf' \
-            './CV_Bagnoli_Alessandro_IT.pdf')"
+            './CV_Bagnoli_Alessandro_EN.pdf')"
 
           echo "RELEASE_URL=$RELEASE_URL" >> $GITHUB_ENV
 
@@ -63,17 +62,12 @@ jobs:
             [
               {
                 "type": "document",
-                "media": "attach://CV_Bagnoli_Alessandro_EN.pdf"
-              },
-              {
-                "type": "document",
-                "media": "attach://CV_Bagnoli_Alessandro_IT.pdf",
+                "media": "attach://CV_Bagnoli_Alessandro_EN.pdf",
                 "caption": "'$ROCKET_EMOJI' Deploy successful! Here are your PDFs. Related release is available at ${{ env.RELEASE_URL }}"
               }
             ]
           ' \
           --form   'CV_Bagnoli_Alessandro_EN.pdf=@./CV_Bagnoli_Alessandro_EN.pdf' \
-          --form   'CV_Bagnoli_Alessandro_IT.pdf=@./CV_Bagnoli_Alessandro_IT.pdf' \
           --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}'
 
       - name: Send Telegram notification on failure
