@@ -1,6 +1,6 @@
-# personal-cv [![Github Actions](https://github.com/AlessandroBagnoli/personal-cv/actions/workflows/CreateReleaseAfterMerge.yml/badge.svg)](https://github.com/AlessandroBagnoli/personal-cv/actions/workflows/CreateReleaseAfterMerge.yml) [![CV Eng](https://img.shields.io/badge/ENG-PDF-green.svg)](https://github.com/AlessandroBagnoli/personal-cv/releases/latest/download/CV_Bagnoli_Alessandro_EN.pdf) [![CV Ita](https://img.shields.io/badge/ITA-PDF-green.svg)](https://github.com/AlessandroBagnoli/personal-cv/releases/latest/download/CV_Bagnoli_Alessandro_IT.pdf)
+# personal-cv [![Github Actions](https://github.com/AlessandroBagnoli/personal-cv/actions/workflows/CreateReleaseAfterMerge.yml/badge.svg)](https://github.com/AlessandroBagnoli/personal-cv/actions/workflows/CreateReleaseAfterMerge.yml) [![CV Eng](https://img.shields.io/badge/ENG-PDF-green.svg)](https://github.com/AlessandroBagnoli/personal-cv/releases/latest/download/CV_Bagnoli_Alessandro_EN.pdf)
 
-Personal Curriculum Vitae updated from time to time. Currently, I am maintaining both the English and Italian version, but I may drop support for the Italian version in a not so distant future.
+Personal Curriculum Vitae.
 
 You can download the latest version available directly from [**here**](https://github.com/AlessandroBagnoli/personal-cv/releases/latest)
 
