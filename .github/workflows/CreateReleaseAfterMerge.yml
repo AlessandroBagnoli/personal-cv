@@ -59,7 +59,7 @@ jobs:
           --header 'User-Agent: GitHub Action' \
           --form   'chat_id=${{ secrets.TELEGRAM_CHAT_ID }}' \
           --form   'document=@./CV_Bagnoli_Alessandro_EN.pdf' \
-          --form   'caption=$ROCKET_EMOJI Deploy successful! Here'"'"'s your PDF. Related release is available at ${{ env.RELEASE_URL }}'
+          --form   "caption=$ROCKET_EMOJI Deploy successful! Here's your PDF. Related release is available at ${{ env.RELEASE_URL }}"
 
       - name: Send Telegram notification on failure
         if: ${{ failure() }}
