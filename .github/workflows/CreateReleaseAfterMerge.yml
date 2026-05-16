@@ -63,7 +63,7 @@ jobs:
               {
                 "type": "document",
                 "media": "attach://CV_Bagnoli_Alessandro_EN.pdf",
-                "caption": "'$ROCKET_EMOJI' Deploy successful! Here are your PDFs. Related release is available at ${{ env.RELEASE_URL }}"
+                "caption": "'$ROCKET_EMOJI' Deploy successful! Here's your PDF. Related release is available at ${{ env.RELEASE_URL }}"
               }
             ]
           ' \
