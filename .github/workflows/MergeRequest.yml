@@ -34,7 +34,7 @@ jobs:
           root_file: "*.tex"
           glob_root_file: true
           latexmk_use_xelatex: true
-          post_compile: "cp cv_eng.pdf CV_Bagnoli_Alessandro_EN.pdf && cp cv_ita.pdf CV_Bagnoli_Alessandro_IT.pdf"
+          post_compile: "cp cv_eng.pdf CV_Bagnoli_Alessandro_EN.pdf"
 
       - name: Create draft release
         run: |
@@ -42,8 +42,7 @@ jobs:
           --draft \
           --target ${{ github.event.pull_request.base.ref }} \
           --title 'Curriculum Vitae ${{ env.ORIGINAL_CODE_TAG }} just for testing purpose!!! Will be deleted' \
-          './CV_Bagnoli_Alessandro_EN.pdf' \
-          './CV_Bagnoli_Alessandro_IT.pdf'
+          './CV_Bagnoli_Alessandro_EN.pdf'
 
       - name: Delete tag and release
         if: ${{ always() }}

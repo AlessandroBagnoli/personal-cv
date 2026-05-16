@@ -1,13 +1,31 @@
-# personal-cv [![Github Actions](https://github.com/AlessandroBagnoli/personal-cv/actions/workflows/CreateReleaseAfterMerge.yml/badge.svg)](https://github.com/AlessandroBagnoli/personal-cv/actions/workflows/CreateReleaseAfterMerge.yml) [![CV Eng](https://img.shields.io/badge/ENG-PDF-green.svg)](https://github.com/AlessandroBagnoli/personal-cv/releases/latest/download/CV_Bagnoli_Alessandro_EN.pdf) [![CV Ita](https://img.shields.io/badge/ITA-PDF-green.svg)](https://github.com/AlessandroBagnoli/personal-cv/releases/latest/download/CV_Bagnoli_Alessandro_IT.pdf)
+# personal-cv [![Github Actions](https://github.com/AlessandroBagnoli/personal-cv/actions/workflows/CreateReleaseAfterMerge.yml/badge.svg)](https://github.com/AlessandroBagnoli/personal-cv/actions/workflows/CreateReleaseAfterMerge.yml) [![CV Eng](https://img.shields.io/badge/ENG-PDF-green.svg)](https://github.com/AlessandroBagnoli/personal-cv/releases/latest/download/CV_Bagnoli_Alessandro_EN.pdf)
 
-Personal Curriculum Vitae updated from time to time. Currently, I am maintaining both the English and Italian version, but I may drop support for the Italian version in a not so distant future.
+Personal Curriculum Vitae built with LaTeX. Download the latest PDF from [**here**](https://github.com/AlessandroBagnoli/personal-cv/releases/latest).
 
-You can download the latest version available directly from [**here**](https://github.com/AlessandroBagnoli/personal-cv/releases/latest)
+## Build locally
+
+Requires XeLaTeX.
+
+```bash
+xelatex cv_eng.tex
+```
+
+## Structure
+
+```
+cv_eng.tex          # Root document — personal info, layout, font/color config
+eng/summary.tex     # Professional summary
+eng/experience.tex  # Work history
+eng/education.tex   # Education
+version             # Semver string used by CI to tag releases
+```
+
+## Releases
+
+Merging to `main` triggers a GitHub Actions workflow that compiles the PDF, tags the repo with the version in `version`, and publishes a GitHub release. Bump `version` before every merge to `main`.
 
 ## Credits
 
-[**LaTeX**](https://www.latex-project.org) is a fantastic typesetting program that a lot of people use these days, especially the math and computer science people in academia.
-
-[**Awesome-CV**](https://github.com/posquit0/Awesome-CV) is a LaTeX template for Curriculum Vitae easy to customize thanks to its clean and semantic markup.
-
-[**latex-action**](https://github.com/xu-cheng/latex-action) is a GitHub Action to compile LaTeX documents.
+- [**LaTeX**](https://www.latex-project.org) — typesetting system
+- [**Awesome-CV**](https://github.com/posquit0/Awesome-CV) — LaTeX CV template
+- [**latex-action**](https://github.com/xu-cheng/latex-action) — GitHub Action to compile LaTeX
